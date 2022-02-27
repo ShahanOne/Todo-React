@@ -1,20 +1,29 @@
 import React, { useState } from "react";
-import ListItems from "./ListItems";
+import ToDoItem from "./ToDoItem";
+import InputArea from "./InputArea";
 
 function App() {
-  const [listItem, SetList] = useState([]);
-  const [inputText, setInput] = useState("");
+  const [inputText, setInputText] = useState("");
+  const [items, setItems] = useState([]);
 
   function handleChange(event) {
-    const { value } = event.target.firstChild;
-
-    SetList([...listItem, value]);
-    setInput("");
-    event.preventDefault();
+    const newValue = event.target.value;
+    setInputText(newValue);
   }
-  function handleInput(e) {
-    const inpValue = e.target.value;
-    setInput(inpValue);
+
+  function addItem() {
+    setItems((prevItems) => {
+      return [...prevItems, inputText];
+    });
+    setInputText("");
+  }
+
+  function deleteItem(id) {
+    setItems((prevItems) => {
+      return prevItems.filter((item, index) => {
+        return index !== id;
+      });
+    });
   }
 
   return (
@@ -22,24 +31,17 @@ function App() {
       <div className="heading">
         <h1>To-Do List</h1>
       </div>
-      <div className="form">
-        <form onSubmit={handleChange}>
-          <input
-            name="listInput"
-            type="text"
-            onChange={handleInput}
-            value={inputText}
-          />
-          <button type="submit">
-            <span>Add</span>
-          </button>
-        </form>
-      </div>
+      <InputArea onChange={handleChange} onClick={addItem} value={inputText} />
       <div>
         <ul>
-          {listItem.map((name) => {
-            return <ListItems itemName={name} />;
-          })}
+          {items.map((todoItem, index) => (
+            <ToDoItem
+              key={index}
+              id={index}
+              text={todoItem}
+              onChecked={deleteItem}
+            />
+          ))}
         </ul>
       </div>
     </div>
